@@ -15,6 +15,7 @@ class Square(BaseModel):
 class Move(BaseModel):
     matchId : int
     playerId : str
+    # Literal["created_at", "updated_at"] = "created_at"
     square: Square
 
 @app.post("/move", status_code=200)
@@ -22,3 +23,10 @@ async def move(
     move : Move
 ):
     return move
+
+# 2) /status
+@app.get("/status", status_code=200)
+async def move(
+    matchId : int
+):
+    return matchId
