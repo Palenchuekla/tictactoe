@@ -1,6 +1,7 @@
 # Import the FastAPI module
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
+from typing import Any
 
 # Instantiate the web application
 app = FastAPI()
@@ -25,8 +26,18 @@ async def move(
     return move
 
 # 2) /status
-@app.get("/status", status_code=200)
-async def move(
+class Match(BaseModel):
+    id : int
+
+@app.get("/status", status_code=200, response_model=Match)
+async def status(
     matchId : int
 ):
-    return matchId
+    match = Match(id=matchId)
+    return match
+
+# 3) /create
+@app.post("/create", status_code=200)
+async def create():
+    match = Match(id=1)
+    return match.id
