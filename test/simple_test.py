@@ -20,3 +20,12 @@ response = operation(f"{url}{endpoint}{query}")
 pprint(response.__dict__)
 pprint(response.status_code)
 pprint(response.json())
+
+# 3) /create
+url = "http://127.0.0.1:8000"
+endpoint = "/create"
+operation = requests.post
+response = operation(f"{url}{endpoint}")
+pprint(response.__dict__)
+pprint(response.status_code)
+pprint(response.json())
