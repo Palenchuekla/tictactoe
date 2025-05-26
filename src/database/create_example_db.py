@@ -6,8 +6,8 @@ import argparse
 from warnings import warn
 from pathlib import Path
 
-from database import core
-from database import schemas
+from . import core
+from . import schemas
 
 def create_disk_sqlite_db(path : Path):
     '''
@@ -24,9 +24,9 @@ def create_example_db(path : Path, verbose : bool = False):
     create_disk_sqlite_db(path=path)
     db = core.DataBase(url=f"sqlite+pysqlite:///{path}")
     db.create_tables()
-    with db.Session() as session:
+    with db.get_session_to_db_NOFastAPI() as session:
         matches = []
-        matches.append(schemas.MatchSchema(turn="Y", board="___X_____"))
+        matches.append(schemas.MatchSchema(turn="X", board="___X_____"))
         matches.append(schemas.MatchSchema(turn="X", board="O____X___"))
         matches.append(schemas.MatchSchema(turn="O", board="_X__X__O_"))
         matches.append(schemas.MatchSchema(turn="X", board="__OO___X_"))

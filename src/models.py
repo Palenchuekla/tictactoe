@@ -7,10 +7,9 @@ class SquareModel(BaseModel):
 class MoveModel(BaseModel):
     matchId : int
     playerId : str
-    # Literal["created_at", "updated_at"] = "created_at"
     square: SquareModel
 
 class MatchModel(BaseModel):
     id: int | None = None
-    turn : str = Field(pattern="^(X|O|_)$")
-    board : str = Field(pattern="^[XO_]{9}$")
+    turn : str = Field(pattern="^(X|O|_)$", default="X")
+    board : str = Field(pattern="^[XO_]{9}$", default="_________")

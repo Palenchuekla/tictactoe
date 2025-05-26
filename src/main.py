@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -5,11 +7,11 @@ from . import models
 from .database import core
 from .database import schemas
 
+# Connect to database: Creates engine and Sessions constructor.
+db = core.DataBase("sqlite+pysqlite:///./tmp/tictactoe.db")
+
 # Instantiate the web application
 app = FastAPI()
-
-# Connect to database: Creates engine and Sessions constructor.
-db = core.DataBase("sqlite+pysqlite:///../database/test.db")
 
 # Endpoints operations
 # 1) /move endpoint
@@ -20,19 +22,45 @@ async def move(
     return move
 
 # 2) /status
+def get_match_by_id(
+    matchId : int,
+    session : Session
+):
+    match = session.query(schemas.MatchSchema).filter(schemas.MatchSchema.id==matchId).first()
+    return match
+
 @app.get("/status", status_code=200)
 def status(
     matchId : int,
-    session : Session = Depends(db.get_session)
+    session : Session = Depends(db.get_session_to_db_FastAPI)
 ):
-    match = session.query(schemas.MatchSchema).filter(schemas.MatchSchema.id == matchId).first()
+    match = get_match_by_id(matchId, session)
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
-    print(match)
-    return models.MatchModel(id=1)
+    return match
 
 # 3) /create
+def post_match_by_id(
+        match   : models.MatchModel,
+        session : Session
+):
+    db_match = schemas.MatchSchema(**match.model_dump())
+    session.add(db_match)
+    session.commit()
+    session.refresh(db_match)
+    return db_match
+
 @app.post("/create", status_code=200)
-async def create():
-    match = models.MatchModel(id=1)
-    return match.id
+async def create(
+    match   : models.MatchModel | None = None,
+    session : Session = Depends(db.get_session_to_db_FastAPI)
+):
+    if match == None:
+        match = models.MatchModel()
+    else:
+        existing = get_match_by_id(matchId=match.id, session=session)
+        if existing:
+            raise HTTPException(status_code=400, detail="Match ID already exists.")
+    
+    db_match = post_match_by_id(match=match, session=session)
+    return {"idMatch":db_match.id}
