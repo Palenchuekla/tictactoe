@@ -22,7 +22,7 @@ def post_match_by_id(
         session : Session
 ) -> schemas.MatchSchema:
     # Check if match id is already used
-    existing = get_match_by_id(matchId=match.id, session=session)
+    existing = session.query(schemas.MatchSchema).filter(schemas.MatchSchema.id==match.id).first()
     if existing:
         raise HTTPException(status_code=400, detail="Match ID already exists.")
     # If not, create the new row for the matches
