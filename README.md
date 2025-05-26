@@ -2,10 +2,9 @@
 Tic-Tac-Toe basic backend implementation.
 # Repository
 The repository is strcutured in the following manner:
-- [.config/.env](./config): Contains configuration parameters of the project. It is a violation of the 12-Factor-App, but it was included for simplicity. Configuraiton is built on top of environment variables.
-- [scripts](./script): Once the installation is done, they allow to set the server running ([run_server.sh](./scripts/run_server.sh)), build a local SQLite database for it ([create_db.sh](./scripts/create_db.sh)) and execute some tests ([run_test.sh](./scripts/run_tests.sh)).
-- [scr](./src): Source code of the application. It is build as a Python package. Database specific code (stablish connection, entity schemas, session generators ...) has been isolated into its own subpackage [database](./src/database).
-- [test](./test): Some Python scripts to test the implemented endpoints.
+- [scripts](./script): Once the installation is done, they allow to set the server running ([run_server.sh](./scripts/run_server.sh)), build (and even populate) a local SQLite database ([create_db.sh](./scripts/create_db.sh) and [create_db.py](./src/database/create_db.py)) and execute some tests. Tests are database dependent and `/post` operations affect the state of the databse (and consecuently the response of the data), so they are
+- [src](./src): Source code of the application. It is build as a Python package. Database specific code (stablish connection, entity schemas, session generators ...) has been isolated into its own subpackage [database](./src/database).
+- [test](./test): Some python scripts to test the implemented endpoints with `pytest`.
 # Installation
 1. Clone the repository.
 ```bash
@@ -26,22 +25,55 @@ pip install -r requirements.txt
 > [!WARNING]  
 > DO NOT forget to activate your virtual environment before exeuting any of the following. You can omit this step if you opted for an alternative.
 
-### Create Database
+## Create Database
 For simplicity, during development a disk SQLite database was used. However, the code should be Database independent, as long as is compatible with [SQLAlchemy](https://www.sqlalchemy.org/). 
 
-To create said database, on a terminal window, navigate to the [root directory](.) of the repository, activate the virtual environment and execute the following command. You can execute the script from anywhere too.
+To create said database, activate the virtual environment and execute the following commands.
 ```bash
  bash scripts/create_db.sh 
 ```
-### Run the Server
-To set the server running, on a terminal window, navigate to the [root directory](.) of the repository, activate the virtual environment and execute the following command. You can execute the script from anywhere too.
+Check the script `-h|--help` to see how to specifiy the database name and to create this databse empty or populated with some examples.
+
+The database will always be created at a local temporal directory called `./tmp` on the root directory of the repository. It will be created if not existent. This way we do not have to deal with privilege and removing sensible information problems.
+
+The creation will not happen if a database with the same path already exists. User will be kindly asked to manuallly remove it to avoid not so lucky miss-commands.
+
+I highly recommend using [SQLite Browser](https://sqlitebrowser.org/) to check and manipulate the database interactively with an intuituve GUI.
+
+## Run the Server
+To set the server running, activate the virtual environment and execute the following commands.
 ```bash
  bash scripts/run_server.sh 
 ```
+Check the script `-h|--help` to see how to set the database URL of the server's databse.
+
 Now, the server should be up and running waiting for our requests.
 
-### Run the Tests
-To run the tests, with the server running, on a terminal window, navigate to the [root directory](.) of the repository, activate the virtual environment and execute the following command. You can execute the script from anywhere too.
+# Testing
+Testing in this context means comparing the response of the server with the expected responses. Even though the web application is stateless, information accessed is not. Responses are dependant of the state of the database and this state depends on the previously executed requests. To make testing with a tool like `pytest` less cumbersome for endpoints that alter the database like `/create` or `/move`, database is re-instantiated before testing every endpoint, as well as the server is re-launched. It is not ideal, the main of having database and web app isolated is for them to be independent, an error/change on the database side should not break the applicaiton.
+### /status
+- To test the `/status` endpoint.
+1. Create a populated database using the [create_db.sh](./scripts/create_db.sh) script with the `-p|--populated` argument (check `-h|--help`).
+2. Run the server using the [run_server.sh](./scripts/run_server.sh) script with the `-u|--url` set to the created database.
+3. Execute the following command.
 ```bash
- bash scripts/run_server.sh 
+ bash scripts/test_status.sh 
+```
+### /create
+TO DO
+- To test the `/create` endpoint.
+1. Create an empty database using the [create_db.sh](./scripts/create_db.sh) script without the `-p|--populated` argument (check `-h|--help`).
+2. Run the server using the [run_server.sh](./scripts/run_server.sh) script with the `-u|--url` set to the created database (check `-h|--help`).
+3. Execute the following command.
+```bash
+ bash scripts/test_create.sh 
+```
+### /move
+TO DO
+- To test the `/move` endpoint.
+1. Create a populated database using the [create_db.sh](./scripts/create_db.sh) script with the `-p|--populated` argument (check `-h|--help`).
+2. Run the server using the [run_server.sh](./scripts/run_server.sh) script with the `-u|--url` set to the created database (check `-h|--help`).
+3. Execute the following command.
+```bash
+ bash scripts/test_move.sh 
 ```

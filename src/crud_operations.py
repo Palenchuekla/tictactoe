@@ -10,6 +10,8 @@ def get_match_by_id(
     session : Session
 ) -> schemas.MatchSchema:
     db_match = session.query(schemas.MatchSchema).filter(schemas.MatchSchema.id==matchId).first()
+    if not db_match:
+        raise HTTPException(status_code=404, detail="Match not found")
     return db_match
 
 

@@ -35,8 +35,6 @@ def status(
     session : Session = Depends(db.get_session_to_db_FastAPI)
 ):
     db_match = crud_operations.get_match_by_id(matchId, session)
-    if not db_match:
-        raise HTTPException(status_code=404, detail="Match not found")
     return db_match
 
 # 3) /create
