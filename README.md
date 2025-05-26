@@ -74,10 +74,15 @@ source scripts/test_status.sh
  source scripts/test_create.sh 
 ```
 ### /move
-TO DO
 - To test the `/move` endpoint.
 1. Create a populated database using the [create_db.sh](./scripts/create_db.sh) script with the `-p|--populated` argument (check `-h|--help`).
+```bash
+source ./scripts/create_db.sh -v -p -n tictactoe
+```
 2. Run the server using the [run_server.sh](./scripts/run_server.sh) script with the `-u|--url` set to the created database (check `-h|--help`).
+```bash
+source ./scripts/run_server.sh --url sqlite+pysqlite:///./tmp/tictactoe.db 
+```
 3. Execute the following command.
 ```bash
  bash scripts/test_move.sh 
