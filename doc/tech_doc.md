@@ -1,5 +1,3 @@
-# Requirementes
-
 # 1. Web Service Implementation
 
 ## Application
@@ -114,10 +112,96 @@ To test the endpints I did lean on the `pytest` and `request` packages from `pyt
 
 ## High Level
 
-Tipically, when talking about users in the context of web applications, users are presented by a set of credentials (user + password), a set of data information and operations that they may can do or not depending on who they are 
+Tipically, in the context of web applications, **users** are the clients that interacts with the application. From a backend-ish point of view, it is interesting to ...
+- Store information about `users`.
+- Identify them. Technically know as **authentication**.
+- Limit or expand what they can do depending on who they are. Technically known as **authorization**.
+
+In this case, the `users` feature will include the following functionalities:
+- **User Registration**: Users will be able to sign up into the application using a email and a password.
+- **User Identification**: A registered user will be able to log into the application.
+- **User Profile**: Every registered user will have some relevant information stored regarding himself; name, email, country, city, stats (number of on going matches, number of matches played, number of matches won, number of matches lost and register date) and rol. Some information will only be available to him or he can limit it (privacy settings).
+- **User Management**: Information about a user can be modified or erased, including unsigning from the application. This can be done by the user itself or by priviledges users.
+- **User Permissions**: Depending on the rol, or the level of privilege, a user will be able to do ceratin kind of things. For example, a regular user can only delete his account, an admin can delete any regular account.
 
 ## API Changes
+New endpoints:
+- `POST /users/register`
+    - Request Body = `{'email':email, 'password':password}`
+    - Description = Registers a new user into the application.
+    - Overview:
+        - Check if email format is correct.
+        - Check if password meet the minimum secure standards.
+        - Check if user does exists already.
+        - Add new user to the database if all of the aboved is satisfied.
+            - Hash/Encript password before storing into database for security.
+- `POST /users/login`:
+    - Request Body = `{'email':email, 'password':password}`
+    - Description = Identifies the user. Checks if it is registered.
+    - Overview:
+        - Check if email is in the database.
+        - After encrypting/hashing the password, check if the password is equal to the one stored in the database for the corresponding user.
+        - If it is not correct, return error.
+        - Else ... Depends on the authentication strategy. It could be a cookie or a token.
+- `GET /users/{user_id}`:
+    - Description = Returns informaiton from a user.
+    - Overview:
+        - Check if the requested user exists in the database.
+        - Depending on who is calling, show all the info or limit it (if the request-er is not the user).
+    - Returns: Atributes of the user.
+- `PUT /users/{user_id}`:
+    - Description = Actualizes informaiton of a user.
+    - Request Body = `{"city":"new_city"}`
+    - Overview:
+        - Check if the requested user exists in the database.
+        - Depending on who is calling, allow changing data on database.
+- `DELETE /users/{user_id}`:
+    - Description = Deletes user.
+    - Overview:
+        - Check if the requested user exists in the database.
+        - Depending on who is calling, allow deleting it.
+- `GET /users/`:
+    - Description = Get all users.
+    - Overview:
+        - Depending on who is calling, return the information.
+    - Return: List of users.
+
+Most new and old endpooints should include some kind of middleware so responsse depend on who is calling. For example, you can not check sensitive information form other user.
+
+Old endpoints:
+- `/create`: 
+    - Creating a new match should impose that request includes the ids/user_names of the players. Every player will be assgined to a symbol "X" or "_", only in the scope of the match. It makes no sense a match with no players.
+    - After creating the match, player's stats should be updated, has they are enrolled on a new match.
+
+- `/move`: 
+    - Making a move should impose that the request includes the id/user_name of the player that makes the move. It should be checked that in that match, it is that player turn.
+    - If the move results in a win, player's stats should be updated.
+
 ## Database Structure
+1. Add a new entity "users" to store all user information:
+- **id**: Primary Key. Auto-generated.
+- **email**: String. Registry email. Index (usuallyused for queries). Not null. Index.
+- **username**: String. Unique. Index. Not null.
+- **pasword**: String. Encrypted/Hashed value for security. Not null.
+- **country**: String.
+- **city**: String.
+- **# matches played**: Integer. Not null.
+- **# matches won**: Integer. Not null.
+- **# matches lost**: Integer. Not null.
+
+
+2. Old "moves" table should now include a new column, which is a foreign key referreing to the user that made the move. Drop/Rename the old `"playerId"` column (refering to the "X", "O") and add a new one.
+    - `player_id`: Foreign key from users.
+
+3. Old "matches" table should now include two columns, which are foreign keys referreing to the users playing. One is asigned to the "X", the other to the "O".
+    - `player_X`: Foreign key from users.
+    - `player_O`: Foreign key from users.
+
+4. If we eant to implement our own authentication service instead on relying in a pre-existing microservice, the database structure will probably change. For example, when using cookies, a database with all active sessions is needed.
+
 ## Architectural Changes
+
+**Security**: 
+Given the fact that we have implemented a registry and login system and we want to restrict or expand endopints fuctionalities based on who is requesting them, a proper autentication systems is needed.
 
 # 3. Cloud Microservices Design
