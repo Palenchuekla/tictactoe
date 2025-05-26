@@ -14,7 +14,7 @@ git clone https://github.com/Palenchuekla/tictactoe
 ```bash
 python -m venv .venv
 source .venv/Scripts/activate
-````
+```
 3. Install the requirements using `python` and `pip`.
 ```bash
 pip install -r requirements.txt
@@ -30,7 +30,7 @@ For simplicity, during development a disk SQLite database was used. However, the
 
 To create said database, activate the virtual environment and execute the following commands.
 ```bash
- bash scripts/create_db.sh 
+source scripts/create_db.sh -v -p -n tictactoe
 ```
 Check the script `-h|--help` to see how to specifiy the database name and to create this databse empty or populated with some examples.
 
@@ -43,7 +43,7 @@ I highly recommend using [SQLite Browser](https://sqlitebrowser.org/) to check a
 ## Run the Server
 To set the server running, activate the virtual environment and execute the following commands.
 ```bash
- bash scripts/run_server.sh 
+source scripts/run_server.sh --url sqlite+pysqlite:///./tmp/tictactoe.db
 ```
 Check the script `-h|--help` to see how to set the database URL of the server's databse.
 
@@ -54,19 +54,24 @@ Testing in this context means comparing the response of the server with the expe
 ### /status
 - To test the `/status` endpoint.
 1. Create a populated database using the [create_db.sh](./scripts/create_db.sh) script with the `-p|--populated` argument (check `-h|--help`).
+```bash
+source ./scripts/create_db.sh -v -p -n tictactoe
+```
 2. Run the server using the [run_server.sh](./scripts/run_server.sh) script with the `-u|--url` set to the created database.
+```bash
+source ./scripts/run_server.sh --url sqlite+pysqlite:///./tmp/tictactoe.db 
+```
 3. Execute the following command.
 ```bash
- bash scripts/test_status.sh 
+source scripts/test_status.sh 
 ```
 ### /create
-TO DO
 - To test the `/create` endpoint.
 1. Create an empty database using the [create_db.sh](./scripts/create_db.sh) script without the `-p|--populated` argument (check `-h|--help`).
 2. Run the server using the [run_server.sh](./scripts/run_server.sh) script with the `-u|--url` set to the created database (check `-h|--help`).
 3. Execute the following command.
 ```bash
- bash scripts/test_create.sh 
+ source scripts/test_create.sh 
 ```
 ### /move
 TO DO
