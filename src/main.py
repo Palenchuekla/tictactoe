@@ -8,8 +8,12 @@ from . import crud_operations
 from .database import core
 from .database import schemas
 
-# Connect to database: Creates engine and Sessions constructor.
-db = core.DataBase("sqlite+pysqlite:///./tmp/tictactoe.db")
+# Check that the BD URL exists
+if not "DB_URL" in os.environ:
+    raise Exception(f"Database URL( \"DB_URL\" environment variable) not defined!")
+
+# Connect to database: creates engine and session generator
+db = core.DataBase(f"{os.environ["DB_URL"]}")
 
 # Instantiate the web application
 app = FastAPI()
@@ -24,8 +28,6 @@ async def move(
     move_db, match_db = crud_operations.post_move(move=move, session=session)
     return {"posted_move":move_db, "match":match_db}
 
-
-
 # 2) /status
 @app.get("/status", status_code=200)
 def status(
@@ -36,8 +38,6 @@ def status(
     if not db_match:
         raise HTTPException(status_code=404, detail="Match not found")
     return db_match
-
-
 
 # 3) /create
 @app.post("/create", status_code=200)

@@ -1,7 +1,6 @@
 import os
 import sqlite3
 from pprint import pprint
-from dotenv import load_dotenv
 import argparse
 from warnings import warn
 from pathlib import Path
@@ -77,39 +76,22 @@ def main():
     # Parse Argument
     parser = argparse.ArgumentParser( 
                     prog='create_example_db',
-                    description='This program creates a local SQLite database at the path defined as \"DUMMY_DATABASE_PATH\" in the specified .env file.',
+                    description='This program creates a local SQLite database at the path specified.',
                     )
-    parser.add_argument("-i", "--input_path", type=str, help="Path of .env file. Must define a variable called \"DUMMY_DATABASE_PATH\"", required=True,)
+    parser.add_argument("-i", "--db_path", type=str, help="Path where the database will be created", required=True,)
     parser.add_argument("-v", "--verbose", help="Output contens of the created DB in a human understandable way",  action="store_true",)
     args = parser.parse_args()
 
     # Validate arguments
-
-    # 1) Extension of the .env file
-    suffix = args.input_path.split('.')[-1] if '.' in args.input_path else ''
-    if suffix != 'env':
-        warn(f"File '{args.input_path}' does not have a .env extension.")
-
-    # 2) Existance of the .env file
-    if os.path.isfile(args.input_path):
-        load_dotenv(dotenv_path=args.input_path)
-        db_path = os.getenv("DUMMY_DATABASE_PATH")
-    else:
-        raise Exception(f"File '{args.input_path}' does not exist.")
-    
-    # 3) Is the variable DUMMY_DATABASE_PATH defined at .env?
-    if db_path == None:
-        raise Exception(f"\"DUMMY_DATABASE_PATH\" not found in \"{args.input_path}\" file.")
-    
-    # 4) Does the directory containing directory of DUMMY_DATABASE_PATH exist?
-    containig_dir = Path(db_path).parent
+    # 2) Does the directory containing directory of DUMMY_DATABASE_PATH exist?
+    containig_dir = Path(args.db_path).parent
     if not containig_dir.exists():
         raise Exception(f"Directory that must contain the database \"{containig_dir}\" does not exist.")
-    # 4) Create DB
-    if os.path.exists(f"{db_path}"):
-        print(f"\"{os.path.abspath(db_path)}\" already exists!\nManually erase it and call this script again if you want to re-instantiate it.")
+    # 2) Create DB
+    if os.path.exists(f"{args.db_path}"):
+        print(f"\"{os.path.abspath(args.db_path)}\" already exists!\nManually erase it and call this script again if you want to re-instantiate it.")
     else:
-        create_example_db(f"{db_path}", verbose=args.verbose)
+        create_example_db(f"{args.db_path}", verbose=args.verbose)
 
 
 if __name__ == "__main__":
