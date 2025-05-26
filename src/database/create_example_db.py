@@ -25,19 +25,53 @@ def create_example_db(path : Path, verbose : bool = False):
     db = core.DataBase(url=f"sqlite+pysqlite:///{path}")
     db.create_tables()
     with db.get_session_to_db_NOFastAPI() as session:
+        
         matches = []
-        matches.append(schemas.MatchSchema(turn="X", board="___X_____"))
+        moves = []
+
+        matches.append(schemas.MatchSchema(turn="O", board="___X_____"))
+        moves.append(schemas.MoveSchema(matchId=1, playerId="X", x=1+1, y=0+1))
+
         matches.append(schemas.MatchSchema(turn="X", board="O____X___"))
+        moves.append(schemas.MoveSchema(matchId=2, playerId="X", x=1+1, y=2+1))
+        moves.append(schemas.MoveSchema(matchId=2, playerId="O", x=0+1, y=0+1))
+
         matches.append(schemas.MatchSchema(turn="O", board="_X__X__O_"))
+        moves.append(schemas.MoveSchema(matchId=3, playerId="X", x=0+1, y=1+1))
+        moves.append(schemas.MoveSchema(matchId=3, playerId="O", x=2+1, y=1+1))
+        moves.append(schemas.MoveSchema(matchId=3, playerId="X", x=1+1, y=1+1))
+
         matches.append(schemas.MatchSchema(turn="X", board="__OO___X_"))
-        matches.append(schemas.MatchSchema(turn="_", board="XXX___OO_"))
+        moves.append(schemas.MoveSchema(matchId=4, playerId="X", x=0+1, y=2+1))
+        moves.append(schemas.MoveSchema(matchId=4, playerId="O", x=1+1, y=0+1))
+        moves.append(schemas.MoveSchema(matchId=4, playerId="X", x=2+1, y=1+1))
+
+        matches.append(schemas.MatchSchema(turn="O", winner="X", board="XXX___OO_"))
+        moves.append(schemas.MoveSchema(matchId=5, playerId="X", x=0+1, y=0+1))
+        moves.append(schemas.MoveSchema(matchId=5, playerId="O", x=2+1, y=0+1))
+        moves.append(schemas.MoveSchema(matchId=5, playerId="X", x=0+1, y=1+1))
+        moves.append(schemas.MoveSchema(matchId=5, playerId="O", x=2+1, y=1+1))
+        moves.append(schemas.MoveSchema(matchId=5, playerId="X", x=0+1, y=2+1))
+
         matches.append(schemas.MatchSchema(turn="O", board="XXOXO__OX"))
+        moves.append(schemas.MoveSchema(matchId=6, playerId="X", x=0+1, y=0+1))
+        moves.append(schemas.MoveSchema(matchId=6, playerId="O", x=1+1, y=1+1))
+        moves.append(schemas.MoveSchema(matchId=6, playerId="X", x=0+1, y=1+1))
+        moves.append(schemas.MoveSchema(matchId=6, playerId="O", x=0+1, y=2+1))
+        moves.append(schemas.MoveSchema(matchId=6, playerId="X", x=1+1, y=0+1))
+        moves.append(schemas.MoveSchema(matchId=6, playerId="O", x=2+1, y=1+1))
+        moves.append(schemas.MoveSchema(matchId=6, playerId="X", x=0+1, y=2+1))
+        
         session.add_all(matches)
+        session.add_all(moves)
+        
         session.commit()
     # Verbose
     if verbose:
         print(" --- MATCHES TABLE ---")
         pprint(session.query(schemas.MatchSchema).all())
+        print(" --- MOVES TABLE ---")
+        pprint(session.query(schemas.MoveSchema).all())
 
 def main():
     # Parse Argument

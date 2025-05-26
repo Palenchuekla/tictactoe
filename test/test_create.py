@@ -1,8 +1,7 @@
 import requests
 from pprint import pprint
 
-# 3) /create
-
+# /create
 url = "http://127.0.0.1:8000"
 endpoint = "/create"
 operation = requests.post
