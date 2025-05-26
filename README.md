@@ -85,5 +85,5 @@ source ./scripts/run_server.sh --url sqlite+pysqlite:///./tmp/tictactoe.db
 ```
 3. Execute the following command.
 ```bash
- bash scripts/test_move.sh 
+ source scripts/test_move.sh 
 ```
