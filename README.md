@@ -1,10 +1,11 @@
 # TicTacToe
-Tic-Tac-Toe basic backend implementation. Answers to the questions from the original exercise/test on [doc](./doc/tech_doc.md).
+Tic-Tac-Toe basic backend implementation.
 # Repository
 The repository is structured in the following manner:
 - [scripts](./script): Once the installation is done, they allow to set the server running ([run_server.sh](./scripts/run_server.sh)), build (and even populate) a local SQLite database ([create_db.sh](./scripts/create_db.sh) and [create_db.py](./src/database/create_db.py)) and execute some tests.
 - [src](./src): Source code of the application. It is build as a Python package. Database specific code (stablish connection, entity schemas, session generators ...) has been isolated into its own subpackage [database](./src/database).
 - [test](./test): Some python scripts to test the implemented endpoints with `pytest`.
+- [doc](./doc): Answers to the questions from the original exercise/test.
 # Installation
 1. Clone the repository.
 ```bash
