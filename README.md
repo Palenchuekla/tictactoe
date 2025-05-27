@@ -72,8 +72,14 @@ source scripts/test_status.sh
 ### /create
 - To test the `/create` endpoint.
 1. Create an empty database using the [create_db.sh](./scripts/create_db.sh) script without the `-p|--populated` argument (check `-h|--help`).
+```bash
+source ./scripts/create_db.sh -v -n tictactoe_empty
+```
 2. Run the server using the [run_server.sh](./scripts/run_server.sh) script with the `-u|--url` set to the created database (check `-h|--help`).
-3. Execute the following command.
+```bash
+source ./scripts/run_server.sh --url sqlite+pysqlite:///./tmp/tictactoe_empty.db 
+```
+4. Execute the following command.
 ```bash
  source scripts/test_create.sh 
 ```
