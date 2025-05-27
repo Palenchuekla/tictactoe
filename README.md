@@ -1,8 +1,8 @@
 # TicTacToe
-Tic-Tac-Toe basic backend implementation. Answers to the questions from the original document on [doc](./doc).
+Tic-Tac-Toe basic backend implementation. Answers to the questions from the original exercise/test on [doc](./doc/tech_doc.md).
 # Repository
-The repository is strcutured in the following manner:
-- [scripts](./script): Once the installation is done, they allow to set the server running ([run_server.sh](./scripts/run_server.sh)), build (and even populate) a local SQLite database ([create_db.sh](./scripts/create_db.sh) and [create_db.py](./src/database/create_db.py)) and execute some tests. Tests are database dependent and `/post` operations affect the state of the databse (and consecuently the response of the data), so they are
+The repository is structured in the following manner:
+- [scripts](./script): Once the installation is done, they allow to set the server running ([run_server.sh](./scripts/run_server.sh)), build (and even populate) a local SQLite database ([create_db.sh](./scripts/create_db.sh) and [create_db.py](./src/database/create_db.py)) and execute some tests.
 - [src](./src): Source code of the application. It is build as a Python package. Database specific code (stablish connection, entity schemas, session generators ...) has been isolated into its own subpackage [database](./src/database).
 - [test](./test): Some python scripts to test the implemented endpoints with `pytest`.
 # Installation
@@ -50,7 +50,10 @@ Check the script `-h|--help` to see how to set the database URL of the server's 
 Now, the server should be up and running waiting for our requests.
 
 # Testing
-Testing in this context means comparing the response of the server with the expected responses. Even though the web application is stateless, information accessed is not. Responses are dependant of the state of the database and this state depends on the previously executed requests. To make testing with a tool like `pytest` less cumbersome for endpoints that alter the database like `/create` or `/move`, database is re-instantiated before testing every endpoint, as well as the server is re-launched. It is not ideal, the main of having database and web app isolated is for them to be independent, an error/change on the database side should not break the applicaiton.
+Testing in this context means comparing the response of the server with the expected responses. Even though the web application is stateless, information accessed is not. Responses are dependant of the state of the database and this state depends on the previously executed requests. To make testing with a tool like `pytest` less cumbersome for endpoints that alter the database like `/create` or `/move`, database is re-instantiated before testing every endpoint. 
+
+The server needs to be re-launched too. From an architectural point of view this is not ideal, it would be much better if the databse acted as an independent microservice. However, a kind of "hot swap" of the database was not implemented.
+
 ### /status
 - To test the `/status` endpoint.
 1. Create a populated database using the [create_db.sh](./scripts/create_db.sh) script with the `-p|--populated` argument (check `-h|--help`).
